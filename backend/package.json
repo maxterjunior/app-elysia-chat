@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build src/index.ts --compile --outfile=build/main"
+  },
+  "dependencies": {
+    "@elysiajs/cron": "^0.7.0",
+    "elysia": "latest",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.5",
+    "bun-types": "latest"
+  },
+  "module": "src/index.js"
+}
