@@ -1,0 +1,1 @@
+# Aplicación usando Elysia, un framework de backend para Bun.js y React.js
