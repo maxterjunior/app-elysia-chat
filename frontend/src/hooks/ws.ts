@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { environment } from '../enviroments';
 
-const useWebSocket = (topic: string ) => {
+const useWebSocket = (topic: string) => {
     const [socket, setSocket] = useState<WebSocket>();
+    const [connected, setConnected] = useState<boolean>(false);
     const enabled = useRef(true)
 
     useEffect(() => {
@@ -17,6 +18,7 @@ const useWebSocket = (topic: string ) => {
 
             newSocket.onopen = (e) => {
                 console.log('Conexión abierta', e);
+                setConnected(true);
             };
 
             newSocket.onmessage = (event) => {
@@ -26,8 +28,8 @@ const useWebSocket = (topic: string ) => {
 
             newSocket.onclose = (e) => {
                 console.log('Conexión cerrada. Intentando reconectar...', e);
-                if (enabled.current)
-                    setTimeout(connectWebSocket, 2000); // Intentar reconectar después de 2 segundos
+                setConnected(false);
+                if (enabled.current) setTimeout(connectWebSocket, 2000); // Intentar reconectar después de 2 segundos
             };
 
             setSocket(newSocket);
@@ -56,7 +58,7 @@ const useWebSocket = (topic: string ) => {
         }
     }
 
-    return { socket, closeConnection, openConnection };
+    return { socket, closeConnection, openConnection, connected };
 };
 
 export default useWebSocket;

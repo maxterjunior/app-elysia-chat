@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { Elysia, t } from "elysia";
 import { generateToken, decodeToken, verifyToken } from "../core/jwt";
-import { tokensStore } from "../core/store";
+import { tokensStore, usersChatStore } from "../core/store";
 
 interface BodyLogin {
     username: string
@@ -58,6 +58,24 @@ export const authRegister = new Elysia()
     })
     .post('/logout', (req) => {
         return { message: 'Logout' }
+    })
+    .post('/login-chat', (req) => {
+        const body = req.body as BodyLogin
+
+        const uuid = randomUUID()
+
+        const data = {
+            uuid,
+            username: body.username
+        }
+
+        const token = generateToken(data)
+
+        const token_data = decodeToken(token)
+
+        usersChatStore.set(token, { token, uuid, ws: null, username: body.username })
+
+        return { data, token, token_data }
     })
 
 

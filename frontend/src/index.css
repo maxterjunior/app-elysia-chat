@@ -79,3 +79,10 @@ img {
   overflow-x: hidden;
   padding: 0 10px;
 }
+
+.text-date{
+  font-size: 10px;
+  color: auto;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
