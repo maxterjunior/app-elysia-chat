@@ -1,6 +1,9 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import WebSocketComponent from './pages/websocket.page.tsx'
-// import App from './App.tsx'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<WebSocketComponent />)
+import App from './App.tsx'
+ReactDOM.createRoot(document.getElementById('root')!).render(<App />)
+
+// import WebSocketComponent from './pages/websocket.page.tsx'
+// ReactDOM.createRoot(document.getElementById('root')!).render(<WebSocketComponent />)
