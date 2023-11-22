@@ -34,3 +34,7 @@ sudo apt-get update && sudo apt-get install cloudflared
 
     cloudflared tunnel --url http://localhost:3000
     cloudflared tunnel --url http://localhost:5173
+
+### Git SSH
+
+    ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
