@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Col, Container, ListGroup, Row } from "react-bootstrap";
 import useWebSocket from "../hooks/ws";
+import { v4 as uuid } from 'uuid'
 
 export interface User {
     uuid: string
@@ -28,7 +29,7 @@ function ChatPage({ user }: Props) {
     const [users, setUsers] = useState<User[]>([])
     const [messages, setMessages] = useState<Message[]>([])
 
-    const { socket, connected, closeConnection } = useWebSocket(TOPIC);
+    const { socket, connected, closeConnection } = useWebSocket(TOPIC, user.token as string);
 
     const sendMessage = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -52,7 +53,13 @@ function ChatPage({ user }: Props) {
         event.currentTarget.reset()
 
         if (socket && socket.readyState === socket.OPEN) {
-            socket.send(JSON.stringify({ message }));
+            const ms: Message = {
+                id: uuid(),
+                message,
+                from: { uuid: user.uuid, username: user.username },
+                date: new Date()
+            }
+            socket.send(JSON.stringify({ data: ms, type: 'message' }));
         }
 
     }
@@ -60,7 +67,20 @@ function ChatPage({ user }: Props) {
     useEffect(() => {
         if (socket) {
             socket.onmessage = (event) => {
-                console.log(1, event.data);
+                try {
+                    const { data, type } = JSON.parse(event.data)
+                    console.log(type, data)
+                    if (type === 'message') {
+                        setMessages(e => [...e, data])
+                    } else if (type === 'users') {
+                        setUsers(data)
+                    } else if (type === 'messages') {
+                        setMessages(data)
+                    }
+
+                } catch (err) {
+                    console.error(err)
+                }
             };
         }
     }, [socket]);
@@ -113,9 +133,7 @@ function ChatPage({ user }: Props) {
                 </Col>
                 <Col xs={9}
                     className={
-                        `d-flex flex-column justify-content-end align-items-center
-                        ${!connected ? 'bg-secondary' : ''}
-                        `
+                        `${!connected ? 'bg-secondary' : ''}`
                     }
                 >
 

@@ -73,8 +73,6 @@ export const authRegister = new Elysia()
 
         const token_data = decodeToken(token)
 
-        usersChatStore.set(token, { token, uuid, ws: null, username: body.username })
-
         return { data, token, token_data }
     })
 

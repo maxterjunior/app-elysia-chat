@@ -33,3 +33,4 @@ sudo apt-get update && sudo apt-get install cloudflared
 #### Correr el servicio
 
     cloudflared tunnel --url http://localhost:3000
+    cloudflared tunnel --url http://localhost:5173

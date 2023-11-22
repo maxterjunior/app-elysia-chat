@@ -4,7 +4,7 @@ import { tokensStore } from './store';
 const secret = process.env.JWT_SECRET || 'default_secret';
 
 export const generateToken = (payload: any) => {
-    return jwt.sign(payload, secret, { expiresIn: '10s' });
+    return jwt.sign(payload, secret, { expiresIn: '5h' });
 };
 
 export const verifyToken = (token: string) => {

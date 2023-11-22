@@ -1,9 +1,8 @@
-// const api = 'http://localhost:3000/api'
-const api = 'https://existence-etc-italiano-connected.trycloudflare.com/api'
+import { environment } from "../enviroments"
 
 export const login = (username: string) => {
     return new Promise((resolve, reject) => {
-        return fetch(api + '/login-chat', {
+        return fetch(environment.api + '/login-chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { environment } from '../enviroments';
 
-const useWebSocket = (topic: string) => {
+const useWebSocket = (topic: string, token: string) => {
     const [socket, setSocket] = useState<WebSocket>();
     const [connected, setConnected] = useState<boolean>(false);
     const enabled = useRef(true)
@@ -12,7 +12,7 @@ const useWebSocket = (topic: string) => {
 
             if (socket) { socket.close(); }
 
-            const url = environment.wsUrl + '?token=' + environment.key + '&topic=' + topic + '&uuid=' + uuid();
+            const url = environment.wsUrl + '?token=' + token + '&topic=' + topic + '&uuid=' + uuid();
 
             const newSocket = new WebSocket(url);
 
