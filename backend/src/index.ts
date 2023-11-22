@@ -15,7 +15,7 @@ const app = new Elysia()
   )
 // .use(jobsRegister)
 
-app.listen(80);
+app.listen(3000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.url?.origin}`
