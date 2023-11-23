@@ -21,10 +21,11 @@ interface Message {
 const TOPIC = 'chat-topic';
 
 interface Props {
-    user: User
+    user: User,
+    returnToLogin: () => void
 }
 
-function ChatPage({ user }: Props) {
+function ChatPage({ user, returnToLogin }: Props) {
 
     const [users, setUsers] = useState<User[]>([])
     const [messages, setMessages] = useState<Message[]>([])
@@ -34,8 +35,6 @@ function ChatPage({ user }: Props) {
     const sendMessage = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const formProps = Object.fromEntries(new FormData(event.currentTarget));
-
-        console.log(formProps)
 
         const message = formProps.message as string
 
@@ -69,7 +68,6 @@ function ChatPage({ user }: Props) {
             socket.onmessage = (event) => {
                 try {
                     const { data, type } = JSON.parse(event.data)
-                    console.log(type, data)
                     if (type === 'message') {
                         setMessages(e => [...e, data])
                     } else if (type === 'users') {
@@ -88,91 +86,96 @@ function ChatPage({ user }: Props) {
     useEffect(() => {
         return () => {
             console.log('Desmontando Chat')
+            closeConnection()
             socket?.close()
         }
     }, [])
 
+    const disconnect = () => {
+        closeConnection()
+        socket?.close()
+        returnToLogin()
+    }
+
     return (
-        <Container style={{ height: '80vh' }} >
-            <Row style={{ height: '100%' }}>
-                <Col xs={3}>
-                    <div className="input-group">
-                        <button type="button" className="btn btn-primary"><i className="fa fa-search"></i></button>
-                        <input type="search" className="form-control" placeholder="Search..." />
-                    </div>
-                    <hr />
-                    <ListGroup>
+        <>
+            <h1 className="my-3 text-center d-flex align-items-center justify-content-center">
+                {user ? <button className="btn btn-none fs-3 text-primary" onClick={() => disconnect()}><i className="fa fa-arrow-left"></i></button> : ''}
+                Chat App
+            </h1>
+            <Container style={{ height: '80vh' }} >
+                <Row style={{ height: '100%' }}>
+                    <Col xs={3}>
+                        <div className="input-group">
+                            <button type="button" className="btn btn-primary"><i className="fa fa-search"></i></button>
+                            <input type="search" className="form-control" placeholder="Search..." />
+                        </div>
+                        <hr />
+                        <ListGroup>
 
-                        {users.length === 0 && (
-                            <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }} >
-                                <span className="text-muted h4">
-                                    Esperando usuarios...
-                                </span>
-                            </div>
-                        )}
-
-                        {users.map((user) => (
-                            <ListGroup.Item key={user.uuid}>
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar" />
-                                <div className="about w-75">
-                                    <div className="name">{user.username}</div>
-                                    <div className="d-flex justify-content-between">
-                                        <div className="status"> <i className={user.status === 'online' ? 'fa fa-circle online' : 'fa fa-circle offline'}></i>
-                                            {user.status === 'online' ? 'online' : 'offline'}
-                                        </div>
-                                        {user.lastMessage && (
-                                            <div className="status"> <i className="fa fa-clock-o"></i>
-                                                {user.lastMessage.toLocaleString()}
-                                            </div>
-                                        )}
-                                    </div>
+                            {users.length === 0 && (
+                                <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }} >
+                                    <span className="text-muted h4">
+                                        Esperando usuarios...
+                                    </span>
                                 </div>
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
-                </Col>
-                <Col xs={9}
-                    className={
-                        `${!connected ? 'bg-secondary' : ''}`
-                    }
-                >
+                            )}
 
-                    {/* {connected ?
-                        <div className="alert alert-success" role="alert"> Conectado </div> :
-                        <div className="alert alert-danger" role="alert"> Desconectado </div>
-                    } */}
-
-                    {!messages.length ?
-                        <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }} >
-                            <h1 className="text-muted">
-                                Envie un mensaje para comenzar
-                            </h1>
-                        </div> : (
-                            <div className="chat-space">
-                                {messages.map((message) => (
-                                    <div key={message.id} className={`d-flex justify-content-${message.from.uuid === user?.uuid ? 'end' : 'start'} align-items-center`}>
-                                        <div className="d-flex flex-column justify-content-start align-items-start" >
-                                            <div className={`rounded p-2 m-2 w-100 ${message.from.uuid === user?.uuid ? 'bg-primary text-white' : 'bg-light'}`}>
-                                                <div className="d-flex justify-content-between">
-                                                    {message.from.uuid !== user?.uuid && (
-                                                        <div className="font-weight-bold">{message.from.username}</div>
-                                                    )}
-                                                    <div className="text-date">{message.date.toLocaleString()}</div>
-                                                </div>
-                                                <div>{message.message}</div>
+                            {users.map((user) => (
+                                <ListGroup.Item key={user.uuid}>
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar" />
+                                    <div className="about w-75">
+                                        <div className="name">{user.username}</div>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="status"> <i className={user.status === 'online' ? 'fa fa-circle online' : 'fa fa-circle offline'}></i>
+                                                {user.status === 'online' ? 'online' : 'offline'}
                                             </div>
+                                            {user.lastMessage && (
+                                                <div className="status"> <i className="fa fa-clock-o"></i>
+                                                    {user.lastMessage.toLocaleString()}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    <form className="input-group mb-0" onSubmit={sendMessage}>
-                        <button type="submit" className="btn btn-primary"><i className="fa fa-send"></i></button>
-                        <input type="text" className="form-control" placeholder="Enter text here..." name="message" />
-                    </form>
-                </Col>
-            </Row>
-        </Container>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                    </Col>
+
+                    <Col xs={9} className={`${!connected ? 'bg-secondary' : ''}`}>
+
+                        {!messages.length ?
+                            <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }} >
+                                <h1 className="text-muted">
+                                    Envie un mensaje para comenzar
+                                </h1>
+                            </div> : (
+                                <div className="chat-space">
+                                    {messages.map((message) => (
+                                        <div key={message.id} className={`d-flex justify-content-${message.from.uuid === user?.uuid ? 'end' : 'start'} align-items-center`}>
+                                            <div className="d-flex flex-column justify-content-start align-items-start" >
+                                                <div className={`rounded p-2 m-2 w-100 ${message.from.uuid === user?.uuid ? 'bg-primary text-white' : 'bg-light'}`}>
+                                                    <div className="d-flex justify-content-between">
+                                                        {message.from.uuid !== user?.uuid && (
+                                                            <div className="font-weight-bold">{message.from.username}</div>
+                                                        )}
+                                                        <div className="text-date">{message.date.toLocaleString()}</div>
+                                                    </div>
+                                                    <div>{message.message}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        <form className="input-group mb-0" onSubmit={sendMessage}>
+                            <button type="submit" className="btn btn-primary"><i className="fa fa-send"></i></button>
+                            <input type="text" className="form-control" placeholder="Enter text here..." name="message" />
+                        </form>
+                    </Col>
+                </Row>
+            </Container>
+        </>
     )
 }
 

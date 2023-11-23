@@ -1,8 +1,8 @@
 export const environment = {
     production: false,
     key: 'dGhpcyBpcyBhIHRlc3QgSldUIGtleQ==',
-    // wsUrl: 'wss://existence-etc-italiano-connected.trycloudflare.com',
-    wsUrl: 'ws://localhost:3000',
-    // api: 'https://existence-etc-italiano-connected.trycloudflare.com/api',
-    api: 'http://localhost:3000/api',
+    wsUrl: 'ws://ec2-54-211-31-147.compute-1.amazonaws.com:3000',
+    // wsUrl: 'ws://localhost:3000',
+    api: 'http://ec2-54-211-31-147.compute-1.amazonaws.com:3000/api',
+    // api: 'http://localhost:3000/api',
 }

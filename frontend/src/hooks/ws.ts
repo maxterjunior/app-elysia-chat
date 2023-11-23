@@ -22,14 +22,17 @@ const useWebSocket = (topic: string, token: string) => {
             };
 
             newSocket.onmessage = (event) => {
-                console.log('Mensaje recibido:', event.data);
+                console.log('Mensaje recibido:', event.data.length, 'bytes');
                 // Manejar el mensaje según sea necesario
             };
 
             newSocket.onclose = (e) => {
-                console.log('Conexión cerrada. Intentando reconectar...', e);
                 setConnected(false);
-                if (enabled.current) setTimeout(connectWebSocket, 2000); // Intentar reconectar después de 2 segundos
+                console.log('Conexión cerrada', e);
+                if (enabled.current) {
+                    console.log('Intentando reconectar...', e);
+                    setTimeout(connectWebSocket, 2000); // Intentar reconectar después de 2 segundos
+                }
             };
 
             setSocket(newSocket);
